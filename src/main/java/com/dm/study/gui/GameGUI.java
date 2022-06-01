@@ -78,7 +78,7 @@ public class GameGUI extends JFrame implements PropertyChangeListener {
                 JLabel label = new JLabel();
                 cells[i][j] = label;
                 label.setPreferredSize(new Dimension(sellSize, sellSize));
-                label.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+                label.setBorder(BorderFactory.createLineBorder(Color.gray));
                 label.setVerticalAlignment(SwingConstants.CENTER);
                 label.setHorizontalAlignment(SwingConstants.CENTER);
                 label.setFont(new Font(Font.SERIF, Font.PLAIN, fontSize));
