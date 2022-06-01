@@ -42,10 +42,10 @@ public class Game {
     private final GameModel gameModel;
     private final GameGUI gui;
 
-    public Game() {
-        int amountOfRow = 7;
-        int amountOfCols = 7;
-        int cellsToWin = 4;
+    public Game(String[] args) {
+        int amountOfRow = 15;
+        int amountOfCols = 15;
+        int cellsToWin = 5;
         char charOfEmptyCell = ' ';
         char[][] field = emptyField(amountOfRow, amountOfCols, charOfEmptyCell);
         Stencil stencil = new Stencil(field, cellsToWin);
@@ -55,16 +55,58 @@ public class Game {
         gameField.addSubscriber(gui);
 
         CircularList<Player> players = new CircularList<>();
-        players.add(new Player(
-                "Player 1",
-                Mark.X,
-                new SupplierHuman(gui::getUserInput)));
-        players.add(new Player(
-                "Player 2",
-                Mark.O,
-                new SupplierComputer(field, Difficulty.LEVEL_2, Mark.O.getSymbol(), charOfEmptyCell, stencil)));
+        addPlayerToList("man", players, Mark.X, "Player 1", field, 2, charOfEmptyCell, stencil);
+        addPlayerToList("comp", players, Mark.O, "Player 2", field, 2, charOfEmptyCell, stencil);
 
         gameModel = new GameModel(players, gameField);
+
+
+        if (args.length != 4) {
+            return;
+        }
+        int sizeField;
+        int levelDifficulty;
+        try {
+            sizeField = Integer.parseInt(args[2]);
+            levelDifficulty = Integer.parseInt(args[3]);
+            if (sizeField > 15 || sizeField < 7) {
+                System.out.println("Размер игрового поля не может быть меньше 7 и больше 15");
+                throw new NumberFormatException();
+            }
+            if (levelDifficulty < Difficulty.getMinDifficulty().ordinal() || levelDifficulty > Difficulty.getMaxDifficulty().ordinal()) {
+                System.out.println("Неправильная сложность. Допустимые значения: от " + Difficulty.getMinDifficulty().ordinal()
+                        + " до " + Difficulty.getMaxDifficulty().ordinal());
+                throw new NumberFormatException();
+            }
+        } catch (NumberFormatException e) {
+            System.out.println("неверный формат входных данных. Пример правильного ввода: man comp 15 1." +
+                    "Данный пример создаст игровое поле размером 15 на 15 с двумя игроками: человеком и компьютером" +
+                    " с простой сложностью");
+            System.exit(1);
+            return;
+        }
+        String player1Type = args[0];
+        String player2Type = args[1];
+        players.clear();
+        addPlayerToList(player1Type, players, Mark.X, "Player 1", field, levelDifficulty, charOfEmptyCell, stencil);
+        addPlayerToList(player2Type, players, Mark.O, "Player 2", field, levelDifficulty, charOfEmptyCell, stencil);
+    }
+
+    private void addPlayerToList(String player1Type, CircularList<Player> players, Mark mark, String name, char[][] field, int levelDifficulty, char charOfEmptyCell, Stencil stencil) {
+        if (player1Type.equals("man")) {
+            players.add(new Player(
+                    "Player 1",
+                    mark,
+                    new SupplierHuman(gui::getUserInput)));
+        } else if (player1Type.equals("comp")) {
+            players.add(new Player(
+                    name,
+                    mark,
+                    new SupplierComputer(field, Difficulty.valueOf(levelDifficulty), mark.getSymbol(), charOfEmptyCell, stencil)));
+        } else {
+            System.out.println("Неверный ввод игроков");
+            System.exit(1);
+        }
     }
 
     public void start() {
