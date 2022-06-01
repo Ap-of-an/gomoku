@@ -62,6 +62,11 @@ public class CircularList<T> {
         return next();
     }
 
+    public void clear() {
+        size = 0;
+        first = current = last = null;
+    }
+
     private class Item {
         private Item next;
         private final T value;
