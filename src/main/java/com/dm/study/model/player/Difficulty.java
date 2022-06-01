@@ -29,5 +29,23 @@ package com.dm.study.model.player;
  */
 public enum Difficulty {
     LEVEL_1,
-    LEVEL_2
+    LEVEL_2;
+
+    public static Difficulty getMaxDifficulty() {
+        return values()[values().length - 1];
+    }
+
+    public static Difficulty getMinDifficulty() {
+        return values()[0];
+    }
+
+    public static Difficulty valueOf(int levelDifficulty) {
+        levelDifficulty--;
+        for (Difficulty value : values()) {
+            if (value.ordinal() == levelDifficulty) {
+                return value;
+            }
+        }
+        return null;
+    }
 }
